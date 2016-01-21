@@ -1,0 +1,39 @@
+{
+  "name": "rb-relayr-client",
+  "version": "0.0.0-semantically-released",
+  "description": "Relayr API client for redBorder",
+  "main": "index.js",
+  "scripts": {
+    "commit": "git-cz",
+    "test": "mocha src/index.test.js",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bigomby/rb-relayr-client.git"
+  },
+  "keywords": [
+    "iot",
+    "relayr",
+    "redborder"
+  ],
+  "author": "Diego Fernández Barrera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bigomby/rb-relayr-client/issues"
+  },
+  "homepage": "https://github.com/Bigomby/rb-relayr-client#readme",
+  "dependencies": {
+    "relayr": "^0.3.8"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "commitizen": "^2.5.0",
+    "cz-conventional-changelog": "^1.1.5",
+    "mocha": "^2.3.4",
+    "semantic-release": "^4.3.5"
+  },
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
+  }
+}
