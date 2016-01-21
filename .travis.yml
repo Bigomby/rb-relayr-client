@@ -16,6 +16,7 @@ after_success:
 script:
   - npm run test
   - npm run check-coverage
+  - npm run upload-coverage
 branches:
   only:
     - master

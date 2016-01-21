@@ -7,6 +7,7 @@
     "commit": "git-cz",
     "check-coverage": "istanbul check-coverage --statements 90 --branches 90 --functions 90 --lines 90",
     "test": "istanbul cover -x *.test.js _mocha -- -R spec src/index.test.js",
+    "upload-coverage": " cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
@@ -30,6 +31,7 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "commitizen": "^2.5.0",
+    "coveralls": "^2.11.6",
     "cz-conventional-changelog": "^1.1.5",
     "ghooks": "^1.0.3",
     "istanbul": "^0.4.2",
