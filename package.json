@@ -2,11 +2,11 @@
   "name": "rb-relayr-client",
   "version": "0.0.0-semantically-released",
   "description": "Relayr API client for redBorder",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "commit": "git-cz",
     "check-coverage": "istanbul check-coverage --statements 90 --branches 90 --functions 90 --lines 90",
-    "test": "istanbul cover -x *.test.js _mocha -- -R spec src/index.test.js",
+    "test": "istanbul cover -x *.test.js _mocha -- -R spec src/*.test.js",
     "upload-coverage": " cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -26,7 +26,11 @@
   },
   "homepage": "https://github.com/Bigomby/rb-relayr-client#readme",
   "dependencies": {
-    "relayr": "^0.3.8"
+    "kafka-node": "^0.3.1",
+    "lodash": "^4.0.0",
+    "q": "^1.4.1",
+    "relayr": "^0.3.8",
+    "winston": "^2.1.1"
   },
   "devDependencies": {
     "chai": "^3.4.1",
@@ -36,14 +40,16 @@
     "ghooks": "^1.0.3",
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
-    "semantic-release": "^4.3.5"
+    "mockery": "^1.4.0",
+    "semantic-release": "^4.3.5",
+    "sinon": "^1.17.2"
   },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     },
     "ghooks": {
-      "pre-commit": "npm run test && npm run check-coverage"
+      "pre-commit": "npm run test"
     }
   }
 }
