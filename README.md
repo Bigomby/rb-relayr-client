@@ -1,5 +1,5 @@
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=flat-square)](https://travis-ci.org/Bigomby/rb-relayr-client?branch=master)
-[![Coveralls](https://img.shields.io/coveralls/jekyll/jekyll.svg?style=flat-square)](https://coveralls.io/github/Bigomby/rb-relayr-client?branch=master)
+[![Travis](https://img.shields.io/travis/Bigomby/rb-relayr-client.svg?style=flat-square)](https://travis-ci.org/Bigomby/rb-relayr-client?branch=master)
+[![Coveralls](https://img.shields.io/coveralls/Bigomby/rb-relayr-client.svg?style=flat-square)](https://coveralls.io/github/Bigomby/rb-relayr-client?branch=master)
 
 # rb-relayr-client
 
