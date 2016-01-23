@@ -1,0 +1,9 @@
+{
+  "connectionString": "localhost:2181",
+  "clientId": "rb-relayr-client",
+  "proxyUuid": "iot-sensor",
+  "topic": "topic",
+  "enrichment": {
+    "test": "Add this field to kafka message"
+  }
+}
