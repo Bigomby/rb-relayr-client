@@ -36,3 +36,6 @@ node_modules
 # Sublime-text project files
 *.sublime-project
 *.sublime-workspace
+
+# Node gyp build
+build/
