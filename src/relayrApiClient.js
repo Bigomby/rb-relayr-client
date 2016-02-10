@@ -31,15 +31,21 @@ RelayrApiClient.prototype.ConnectAll = function () {
   var deferred = Q.defer()
 
   this.relayr.user(this.token, function (err, user) {
-    this_.relayr.devices(user.id, this_.token, function (err, devices) {
+    if (err) {
+      logger.error(err)
+      deferred.reject()
+    } else {
+      this_.relayr.devices(user.id, this_.token, function (err, devices) {
 
-      for (var i = 0; i < devices.length; i++) {
-        this_.relayr.connect(this_.token, devices[i].id)
-        logger.debug('Connected to device: ' + devices[i].id)
-      }
+        for (var i = 0; i < devices.length; i++) {
+          this_.relayr.connect(this_.token, devices[i].id)
+          logger.debug('Connected to device: ' + devices[i].id)
+        }
 
-      deferred.resolve()
-    })
+        logger.info('Connected to devices')
+        deferred.resolve()
+      })
+    }
   })
 
   return deferred.promise
