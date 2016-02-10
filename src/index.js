@@ -17,15 +17,10 @@ var producer = new KafkaProducer()
 var relayrApiClient = new RelayrApiClient()
 
 logger.info('Initializing kafka producer')
-producer.Init().then(
-  function () {
-    logger.info('Kafka producer ready')
-    relayrApiClient.ConnectAll().then(function () {
-      logger.info('Connected to all devices')
-      relayrApiClient.AddProducer(producer)
-    })
-  },
-  function (err) {
-    logger.error(err)
-  }
-)
+
+// Initialize the kafka producer
+producer.Init()
+  // Connecto to all the devices
+  .then(relayrApiClient.ConnectAll())
+  // Use the kafka producer to send data gathered from devices
+  .then(relayrApiClient.AddProducer(producer))
