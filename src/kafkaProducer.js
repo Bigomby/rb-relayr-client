@@ -42,14 +42,14 @@ KafkaProducer.prototype.Init = function () {
 }
 
 KafkaProducer.prototype.produce = function (msg) {
-  var kafkaPayloads = []
+  var messages = []
 
   for (var i = 0; i < msg.readings.length; i++) {
     if (typeof msg.readings[i].value !== 'object') {
       var kafkaMessage = {
         'proxy_uuid': config.proxyUuid,
         'sensor_uuid': msg.deviceId,
-        'timestamp': Math.floor(msg.readings[i].recorded / 1000),
+        'timestamp': Math.floor(msg.received / 1000),
         'value': msg.readings[i].value.toString(),
         'monitor': msg.readings[i].meaning
       }
@@ -60,15 +60,15 @@ KafkaProducer.prototype.produce = function (msg) {
 
       _.extend(kafkaMessage, config.enrichment)
 
-      kafkaPayloads.push({
-        topic: config.topic,
-        messages: JSON.stringify(kafkaMessage)
-      })
+      messages.push(JSON.stringify(kafkaMessage))
     }
   }
 
-  this.producer.send(kafkaPayloads, function () {
-    logger.debug(kafkaPayloads)
+  this.producer.send([{
+    topic: config.topic,
+    messages: messages
+  }], function () {
+    logger.debug(messages)
   })
 }
 
