@@ -7,8 +7,8 @@ var Q = require('q')
 
 var config = require('../config/kafkaProducer')
 
-var logger = new(winston.Logger)({
-  transports: [new(winston.transports.Console)({
+var logger = new (winston.Logger)({
+  transports: [new (winston.transports.Console)({
     level: 'info',
     colorize: true,
     prettyPrint: true,
@@ -16,7 +16,7 @@ var logger = new(winston.Logger)({
   })]
 })
 
-function KafkaProducer() {
+function KafkaProducer () {
   this.connectionString = config.connectionString
   this.clientId = config.clientId
   this.topic = config.topic
@@ -46,13 +46,16 @@ KafkaProducer.prototype.produce = function (msg) {
 
   for (var i = 0; i < msg.readings.length; i++) {
     if (typeof msg.readings[i].value !== 'object') {
-
       var kafkaMessage = {
-        "proxy_uuid": config.proxyUuid,
-        "sensor_uuid": msg.deviceId,
-        "timestamp": Math.floor(msg.readings[i].recorded / 1000),
-        "value": msg.readings[i].value.toString(),
-        "monitor": msg.readings[i].meaning
+        'proxy_uuid': config.proxyUuid,
+        'sensor_uuid': msg.deviceId,
+        'timestamp': Math.floor(msg.readings[i].recorded / 1000),
+        'value': msg.readings[i].value.toString(),
+        'monitor': msg.readings[i].meaning
+      }
+
+      if (kafkaMessage.timestamp === null || isNaN(kafkaMessage.timestamp)) {
+        kafkaMessage.timestamp = Math.floor(new Date() / 1000)
       }
 
       _.extend(kafkaMessage, config.enrichment)
