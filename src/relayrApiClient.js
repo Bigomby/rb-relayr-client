@@ -1,13 +1,14 @@
-'use strict';
+'use strict'
 
-var Q = require('q');
+var fs = require('fs')
+var Q = require('q')
 var winston = require('winston')
 var Relayr = require('relayr')
 
 var RelayrApiClientConfig = require('../config/relayrApiClient')
 
-var logger = new(winston.Logger)({
-  transports: [new(winston.transports.Console)({
+var logger = new (winston.Logger)({
+  transports: [new (winston.transports.Console)({
     level: 'info',
     prettyPrint: true,
     colorize: true,
@@ -15,7 +16,7 @@ var logger = new(winston.Logger)({
   })]
 })
 
-function RelayrApiClient() {
+function RelayrApiClient () {
   this.token = RelayrApiClientConfig.token
   this.appId = RelayrApiClientConfig.appId
 
@@ -36,14 +37,16 @@ RelayrApiClient.prototype.ConnectAll = function () {
       deferred.reject()
     } else {
       this_.relayr.devices(user.id, this_.token, function (err, devices) {
+        if (err) {
+          logger.error(err)
+        } else {
+          for (var i = 0; i < devices.length; i++) {
+            this_.relayr.connect(this_.token, devices[i].id)
+            logger.debug('Connected to device: ' + devices[i].id)
+          }
 
-        for (var i = 0; i < devices.length; i++) {
-          this_.relayr.connect(this_.token, devices[i].id)
-          logger.debug('Connected to device: ' + devices[i].id)
+          logger.info('Connected to devices')
         }
-
-        logger.info('Connected to devices')
-        deferred.resolve()
       })
     }
   })
@@ -54,8 +57,33 @@ RelayrApiClient.prototype.ConnectAll = function () {
 RelayrApiClient.prototype.AddProducer = function (producer) {
   this.relayr.on('data', function (topic, msg) {
     msg.topic = topic
+    logger.debug(msg)
     producer.produce(msg)
   })
+}
+
+RelayrApiClient.prototype.ListDevices = function () {
+  var this_ = this
+  var deferred = Q.defer()
+
+  this.relayr.user(this.token, function (err, user) {
+    if (err) {
+      logger.error(err)
+    } else {
+      logger.info(user)
+      this_.relayr.devices(user.id, this_.token, function (err, devices) {
+        if (err) {
+          logger.error(err)
+        } else {
+          fs.writeFile('devices.json', JSON.stringify(devices, null, 2), function () {
+            deferred.resolve()
+          })
+        }
+      })
+    }
+  })
+
+  return deferred.promise
 }
 
 module.exports = RelayrApiClient
