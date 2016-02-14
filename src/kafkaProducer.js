@@ -48,8 +48,9 @@ KafkaProducer.prototype.produce = function(msg) {
     if (typeof msg.readings[i].value !== 'object') {
       var value = msg.readings[i].value
 
-      if (msg.readings[i].monitor === 'humidity' && msg.readings[i].value > 100) {
+      if (msg.readings[i].meaning === 'humidity' && msg.readings[i].value > 100) {
         value = 100
+        logger.warn('Percent greater than 100')
       }
       var kafkaMessage = {
         'proxy_uuid': config.proxyUuid,
