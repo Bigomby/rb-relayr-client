@@ -16,13 +16,13 @@ var logger = new (winston.Logger)({
   })]
 })
 
-function KafkaProducer () {
+function KafkaProducer() {
   this.connectionString = config.connectionString
   this.clientId = config.clientId
   this.topic = config.topic
 }
 
-KafkaProducer.prototype.Init = function () {
+KafkaProducer.prototype.Init = function() {
   var deferred = Q.defer()
 
   this.client = new kafka.Client(
@@ -31,17 +31,17 @@ KafkaProducer.prototype.Init = function () {
   )
   this.producer = new kafka.Producer(this.client)
 
-  this.producer.on('ready', function () {
+  this.producer.on('ready', function() {
     deferred.resolve()
   })
-  this.producer.on('error', function (err) {
+  this.producer.on('error', function(err) {
     deferred.reject(err)
   })
 
   return deferred.promise
 }
 
-KafkaProducer.prototype.produce = function (msg) {
+KafkaProducer.prototype.produce = function(msg) {
   var messages = []
 
   for (var i = 0; i < msg.readings.length; i++) {
@@ -51,7 +51,8 @@ KafkaProducer.prototype.produce = function (msg) {
         'sensor_uuid': msg.deviceId,
         'timestamp': Math.floor(msg.received / 1000),
         'value': msg.readings[i].value.toString(),
-        'monitor': msg.readings[i].meaning
+        'monitor': msg.readings[i].meaning,
+        'sensor_name': msg.name
       }
 
       if (kafkaMessage.timestamp === null || isNaN(kafkaMessage.timestamp)) {
@@ -67,7 +68,7 @@ KafkaProducer.prototype.produce = function (msg) {
   this.producer.send([{
     topic: config.topic,
     messages: messages
-  }], function () {
+  }], function() {
     logger.debug(messages)
   })
 }

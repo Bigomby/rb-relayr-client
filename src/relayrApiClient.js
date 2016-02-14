@@ -9,39 +9,41 @@ var RelayrApiClientConfig = require('../config/relayrApiClient')
 
 var logger = new (winston.Logger)({
   transports: [new (winston.transports.Console)({
-    level: 'info',
+    level: 'debug',
     prettyPrint: true,
     colorize: true,
     label: 'api-client'
   })]
 })
 
-function RelayrApiClient () {
+function RelayrApiClient() {
   this.token = RelayrApiClientConfig.token
   this.appId = RelayrApiClientConfig.appId
+  this.deviceDb = []
 
   this.relayr = new Relayr(this.appId)
 }
 
-RelayrApiClient.prototype.Connect = function (devId) {
+RelayrApiClient.prototype.Connect = function(devId) {
   this.relayr.connect(this.token, devId)
 }
 
-RelayrApiClient.prototype.ConnectAll = function () {
+RelayrApiClient.prototype.ConnectAll = function() {
   var this_ = this
   var deferred = Q.defer()
 
-  this.relayr.user(this.token, function (err, user) {
+  this.relayr.user(this.token, function(err, user) {
     if (err) {
       logger.error(err)
       deferred.reject()
     } else {
-      this_.relayr.devices(user.id, this_.token, function (err, devices) {
+      this_.relayr.devices(user.id, this_.token, function(err, devices) {
         if (err) {
           logger.error(err)
         } else {
           for (var i = 0; i < devices.length; i++) {
             this_.relayr.connect(this_.token, devices[i].id)
+            this_.deviceDb.push(devices[i])
             logger.debug('Connected to device: ' + devices[i].id)
           }
 
@@ -54,28 +56,31 @@ RelayrApiClient.prototype.ConnectAll = function () {
   return deferred.promise
 }
 
-RelayrApiClient.prototype.AddProducer = function (producer) {
-  this.relayr.on('data', function (topic, msg) {
+RelayrApiClient.prototype.AddProducer = function(producer) {
+  var this_ = this
+
+  this.relayr.on('data', function(topic, msg) {
     msg.topic = topic
+    msg.name = this_.GetName(msg.deviceId)
     logger.debug(msg)
     producer.produce(msg)
   })
 }
 
-RelayrApiClient.prototype.ListDevices = function () {
+RelayrApiClient.prototype.ListDevices = function() {
   var this_ = this
   var deferred = Q.defer()
 
-  this.relayr.user(this.token, function (err, user) {
+  this.relayr.user(this.token, function(err, user) {
     if (err) {
       logger.error(err)
     } else {
       logger.info(user)
-      this_.relayr.devices(user.id, this_.token, function (err, devices) {
+      this_.relayr.devices(user.id, this_.token, function(err, devices) {
         if (err) {
           logger.error(err)
         } else {
-          fs.writeFile('devices.json', JSON.stringify(devices, null, 2), function () {
+          fs.writeFile('devices.json', JSON.stringify(devices, null, 2), function() {
             deferred.resolve()
           })
         }
@@ -84,6 +89,19 @@ RelayrApiClient.prototype.ListDevices = function () {
   })
 
   return deferred.promise
+}
+
+RelayrApiClient.prototype.GetName = function(id) {
+  var name
+
+  this.deviceDb.forEach(function(elt) {
+    if (elt.id === id) {
+      name = elt.name
+      return
+    }
+  })
+
+  return name
 }
 
 module.exports = RelayrApiClient
