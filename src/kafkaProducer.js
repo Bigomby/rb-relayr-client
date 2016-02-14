@@ -52,7 +52,11 @@ KafkaProducer.prototype.produce = function(msg) {
         'timestamp': Math.floor(msg.received / 1000),
         'value': msg.readings[i].value.toString(),
         'monitor': msg.readings[i].meaning,
-        'sensor_name': msg.name
+        'sensor_name': msg.deviceData.name
+      }
+
+      if (kafkaMessage.monitor === 'humidity' && kafkaMessage.value > 100) {
+        kafkaMessage = 100
       }
 
       if (kafkaMessage.timestamp === null || isNaN(kafkaMessage.timestamp)) {
