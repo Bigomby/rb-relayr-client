@@ -61,7 +61,7 @@ RelayrApiClient.prototype.AddProducer = function(producer) {
 
   this.relayr.on('data', function(topic, msg) {
     msg.topic = topic
-    msg.name = this_.GetName(msg.deviceId)
+    msg.deviceData = this_.GetDeviceData(msg.deviceId)
     logger.debug(msg)
     producer.produce(msg)
   })
@@ -91,17 +91,17 @@ RelayrApiClient.prototype.ListDevices = function() {
   return deferred.promise
 }
 
-RelayrApiClient.prototype.GetName = function(id) {
-  var name
+RelayrApiClient.prototype.GetDeviceData = function(id) {
+  var device
 
   this.deviceDb.forEach(function(elt) {
     if (elt.id === id) {
-      name = elt.name
+      device = elt
       return
     }
   })
 
-  return name
+  return device
 }
 
 module.exports = RelayrApiClient
