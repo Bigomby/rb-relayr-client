@@ -46,17 +46,18 @@ KafkaProducer.prototype.produce = function(msg) {
 
   for (var i = 0; i < msg.readings.length; i++) {
     if (typeof msg.readings[i].value !== 'object') {
+      var value = msg.readings[i].value
+
+      if (msg.readings[i].monitor === 'humidity' && msg.readings[i].value > 100) {
+        value = 100
+      }
       var kafkaMessage = {
         'proxy_uuid': config.proxyUuid,
         'sensor_uuid': msg.deviceId,
         'timestamp': Math.floor(msg.received / 1000),
-        'value': msg.readings[i].value.toString(),
+        'value': value.toString(),
         'monitor': msg.readings[i].meaning,
         'sensor_name': msg.deviceData.name
-      }
-
-      if (kafkaMessage.monitor === 'humidity' && kafkaMessage.value > 100) {
-        kafkaMessage = 100
       }
 
       if (kafkaMessage.timestamp === null || isNaN(kafkaMessage.timestamp)) {
