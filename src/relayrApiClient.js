@@ -9,7 +9,7 @@ var RelayrApiClientConfig = require('../config/relayrApiClient')
 
 var logger = new (winston.Logger)({
   transports: [new (winston.transports.Console)({
-    level: 'debug',
+    level: 'info',
     prettyPrint: true,
     colorize: true,
     label: 'api-client'
