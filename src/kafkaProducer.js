@@ -45,7 +45,7 @@ KafkaProducer.prototype.produce = function(msg) {
   var messages = []
 
   for (var i = 0; i < msg.readings.length; i++) {
-    if (typeof msg.readings[i].value !== 'object') {
+    if (typeof msg.readings[i].value !== 'object' && !this.isBlacklisted(msg.deviceId)) {
       var value = msg.readings[i].value
 
       if (msg.readings[i].meaning === 'humidity' && msg.readings[i].value > 100) {
@@ -77,6 +77,18 @@ KafkaProducer.prototype.produce = function(msg) {
   }], function() {
     logger.debug(messages)
   })
+}
+
+KafkaProducer.prototype.isBlacklisted = function(id) {
+  if (config && config.blacklist) {
+    for (var i = 0; i < config.blacklist.length; i++) {
+      if (config.blacklist[i] === id) {
+        return true
+      }
+    }
+  }
+
+  return false
 }
 
 module.exports = KafkaProducer
